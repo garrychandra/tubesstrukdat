@@ -1,11 +1,10 @@
 public class Produk {
     String kode;
     String nama;
-    String harga;
-    String stok;
-    String banyakTerjual;
+    Double harga;
+    int stok;
+    int banyakTerjual;
     String tipe;
     String kodePenjual;
-    String token;
-    String ongkir;
+    Double ongkir;
 }
