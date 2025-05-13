@@ -1,3 +1,5 @@
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Stack;
 public class Main {
     static Scanner input = new Scanner(System.in);
     static User loginUser = new User();
+    static Double payLaterFee = 0.02;
     static HashMap<String, User> user = new HashMap<>();
     static HashMap<String, Produk> produks = new HashMap<>();
     static HashMap<String, Makanan> makanan = new HashMap<>();
@@ -15,9 +18,174 @@ public class Main {
     static HashMap<String, Toko> toko = new HashMap<>();
     static HashMap<String, Stack<Riwayat>> riwayat = new HashMap<>();
     static HashMap<String, PayLater> paylater = new HashMap<>();
-    static HashMap<String, PriorityQueue<SPinjam>> pinjam = new HashMap<>();
+    static HashMap<String, ArrayDeque<SPinjam>> pinjam = new HashMap<>();
     public static void main(String[] args) {
-        
+        addDummy();
+        if (login()) {
+            menu();
+        }
+    }
+
+    public static Boolean login() {
+        while (true) {
+            System.out.println("Login");
+            System.out.print("Masukkan username: ");
+            String username = input.nextLine();
+            System.out.print("Masukkan password: ");
+            String password = input.nextLine();
+
+            // Check if username exists
+            if (user.containsKey(username)) {
+                User u = user.get(username);
+                if (u.password.equals(password)) {
+                    System.out.println("Login berhasil. Selamat datang, " + u.name + "!");
+                    loginUser = u;
+                    return true;
+                } else {
+                    System.out.println("Password salah. Silakan coba lagi.\n");
+                }
+            } else {
+                System.out.println("Username tidak ditemukan. Silakan coba lagi.\n");
+            }
+        }
+    }
+
+
+    public static void menu() {
+        while (true) {
+            System.out.println("\n=== MENU UTAMA ===");
+            System.out.println("1. Produk");
+            System.out.println("2. Makanan");
+            System.out.println("3. Tagihan");
+            System.out.println("4. SPinjam");
+            System.out.println("5. Riwayat");
+            System.out.println("6. Top up Shopee pay");
+            System.out.println("7. Exit");
+            System.out.print("Pilih menu: ");
+
+            String pilihan = input.nextLine();
+
+            switch (pilihan) {
+                case "1":
+                    tampilkanProduk();
+                    System.out.print("Masukkan kode produk yang ingin dibeli: ");
+                    String kode = input.nextLine();
+                    System.out.print("Masukkan jumlah yang ingin dibeli: ");
+                    int jumlah = input.nextInt();
+                    input.nextLine(); // Consume newline
+                    beliProduk(kode, jumlah);
+                    break;
+                case "2":
+                    tampilkanMakanan();
+                    break;
+                case "3":
+                    tampilkanTagihan();
+                    break;
+                case "4":
+                    tampilkanPinjaman();
+                    break;
+                case "5":
+                    tampilkanRiwayat();
+                    break;
+                case "6":
+                    break;
+                case "7":
+                    System.out.println("Keluar dari program. Terima kasih!");
+                    return;
+                default:
+                    System.out.println("Pilihan tidak valid. Silakan coba lagi.");
+            }
+        }
+    }
+
+    public static void addUser(String username, String password, String phone, String address, double saldo,
+            String name) {
+        User u = new User();
+        u.username = username;
+        u.password = password;
+        u.phoneNumber = phone;
+        u.address = address;
+        u.saldo = saldo;
+        u.name = name;
+        user.put(username, u);
+    }
+
+    public static void addToko(String kode, String nama, String alamat, String kodePos, String status) {
+        Toko t = new Toko();
+        t.kode = kode;
+        t.nama = nama;
+        t.alamat = alamat;
+        t.kodePos = kodePos;
+        t.status = status;
+        toko.put(kode, t);
+    }
+
+    public static void addProduk(String kode, String nama, Double harga, int stok, int terjual, String tipe,
+            String kodePenjual, Double ongkir) {
+        Produk p = new Produk();
+        p.kode = kode;
+        p.nama = nama;
+        p.harga = harga;
+        p.stok = stok;
+        p.banyakTerjual = terjual;
+        p.tipe = tipe;
+        p.kodePenjual = kodePenjual;
+        p.ongkir = ongkir;
+        produks.put(kode, p);
+    }
+
+    public static void addMakanan(String kode, String nama, Double harga, int stok, int terjual, String tipe,
+            String kodePenjual, Double ongkir, String kurir, Date estimasi) {
+        Makanan m = new Makanan();
+        m.kode = kode;
+        m.nama = nama;
+        m.harga = harga;
+        m.stok = stok;
+        m.banyakTerjual = terjual;
+        m.tipe = tipe;
+        m.kodePenjual = kodePenjual;
+        m.ongkir = ongkir;
+        m.namaKurir = kurir;
+        m.estimasiKedatangan = estimasi;
+        makanan.put(kode, m);
+    }
+
+    public static void addPayLater(String userid, List<Double> tagihanList) {
+        PayLater p = new PayLater();
+        p.userid = userid;
+        p.tagihan.addAll(tagihanList);
+        paylater.put(userid, p);
+    }
+
+    public static void addPinjaman(String userid, SPinjam pinjaman) {
+        if(!pinjam.containsKey(userid)) {
+            pinjam.put(userid, new ArrayDeque<>());
+        }
+        pinjam.get(userid).add(pinjaman);
+    }
+
+    public static void addRiwayat(String userid, Riwayat entries) {
+        if(!riwayat.containsKey(userid)) {
+            riwayat.put(userid, new Stack<>());
+        }
+        riwayat.get(userid).push(entries);
+    }
+
+    public static void addTagihan(String kode, String nama, Double harga, int stok, int terjual,
+            String tipe, String kodePenjual, Double ongkir) {
+        Produk t = new Produk();
+        t.kode = kode;
+        t.nama = nama;
+        t.harga = harga;
+        t.stok = stok;
+        t.banyakTerjual = terjual;
+        t.tipe = tipe;
+        t.kodePenjual = kodePenjual;
+        t.ongkir = ongkir;
+        tagihan.put(kode, t);
+    }
+
+    public static void addDummy(){
         // Add Users
         addUser("alice", "pass123", "081234567890", "Jl. Mawar 12", 100000.0, "Alice");
         addUser("bob", "bobpass", "082233445566", "Jl. Melati 21", 75000.0, "Bob");
@@ -140,158 +308,88 @@ public class Main {
                         status = "Dikirim";
                         token = "PAM-96F3-BC27";
                     }});
-
-        
-        if (login()) {
-            menu();
-        }
     }
 
-    public static Boolean login() {
-        while (true) {
-            System.out.println("Login");
-            System.out.print("Masukkan username: ");
-            String username = input.nextLine();
-            System.out.print("Masukkan password: ");
-            String password = input.nextLine();
-
-            // Check if username exists
-            if (user.containsKey(username)) {
-                User u = user.get(username);
-                if (u.password.equals(password)) {
-                    System.out.println("Login berhasil. Selamat datang, " + u.name + "!");
-                    loginUser = u;
-                    return true;
+    public static void beliProduk(String kode, int jumlah) {
+        Produk p = produks.get(kode);
+        if (p != null && p.stok >= jumlah) {
+            System.out.println("Pilih metode pembayaran:");
+            System.out.println("1. PayLater");
+            System.out.println("2. Shopee Pay");
+            String metode = input.nextLine();
+            if (metode.equals("1")) {
+                bayarDenganPayLater(kode, jumlah * p.harga);
+            } else if (metode.equals("2")) {
+                if (loginUser.saldo >= jumlah * p.harga) {
+                    loginUser.saldo -= jumlah * p.harga;
+                    System.out.println("Pembayaran berhasil! Saldo tersisa: " + loginUser.saldo);
                 } else {
-                    System.out.println("Password salah. Silakan coba lagi.\n");
+                    System.out.println("Saldo tidak cukup.");
+                    return;
                 }
             } else {
-                System.out.println("Username tidak ditemukan. Silakan coba lagi.\n");
+                System.out.println("Metode pembayaran tidak valid.");
+                return;
             }
+            p.stok -= jumlah;
+            Riwayat r = new Riwayat();
+            r.kodePembeli = loginUser.username;
+            r.produk = p;
+            r.jumlah = jumlah;
+            r.tanggal = new Date();
+            r.status = "Selesai";
+            addRiwayat(loginUser.username, r);
+            System.out.println("Pembelian berhasil!");
+        } else {
+            System.out.println("Stok tidak cukup atau produk tidak ditemukan.");
         }
     }
 
-
-    public static void menu() {
-        while (true) {
-            System.out.println("\n=== MENU UTAMA ===");
-            System.out.println("1. Produk");
-            System.out.println("2. Makanan");
-            System.out.println("3. Tagihan");
-            System.out.println("4. SPinjam");
-            System.out.println("5. Riwayat");
-            System.out.println("6. Top up Shopee pay");
-            System.out.println("7. Exit");
-            System.out.print("Pilih menu: ");
-
-            String pilihan = input.nextLine();
-
-            switch (pilihan) {
-                case "1":
-                    tampilkanProduk();
-                    break;
-                case "2":
-                    tampilkanMakanan();
-                    break;
-                case "3":
-                    tampilkanTagihan();
-                    break;
-                case "4":
-                    tampilkanPinjaman();
-                    break;
-                case "5":
-                    tampilkanRiwayat();
-                    break;
-                case "6":
-                    break;
-                case "7":
-                    System.out.println("Keluar dari program. Terima kasih!");
-                    return;
-                default:
-                    System.out.println("Pilihan tidak valid. Silakan coba lagi.");
-            }
+    public static void bayarDenganPayLater(String kode, double jumlah){
+        System.out.println("jangka cicilan paylater: ");
+        System.out.println("1. 1 bulan");
+        System.out.println("2. 3 bulan");
+        System.out.println("3. 6 bulan");
+        System.out.println("4. 12 bulan");
+        String jangka = input.nextLine();
+        int jangkaBulan = 0;
+        switch (jangka) {
+            case "1":
+                jangkaBulan = 1;
+                break;
+            case "2":
+                jangkaBulan = 3;
+                break;
+            case "3":
+                jangkaBulan = 6;
+                break;
+            case "4":
+                jangkaBulan = 12;
+                break;
+            default:
+                System.out.println("Pilihan tidak valid.");
+                return;
         }
-    }
+        double totalBayar = jumlah*(1+payLaterFee);
+        double cicilan = totalBayar / jangkaBulan;
+        for(int i = 0; i < jangkaBulan; i++){
+            if(paylater.get(loginUser.username) == null){
+                paylater.put(loginUser.username, new PayLater());
+            } 
+            if(paylater.get(loginUser.username).tagihan == null){
+                paylater.get(loginUser.username).tagihan = new ArrayList<Double>();
+            } 
+            if(paylater.get(loginUser.username).tagihan.size() < i+1){
+                paylater.get(loginUser.username).tagihan.add(0.0);
+            }
 
-    public static void addUser(String username, String password, String phone, String address, double saldo,
-            String name) {
-        User u = new User();
-        u.username = username;
-        u.password = password;
-        u.phoneNumber = phone;
-        u.address = address;
-        u.saldo = saldo;
-        u.name = name;
-        user.put(username, u);
-    }
-
-    public static void addToko(String kode, String nama, String alamat, String kodePos, String status) {
-        Toko t = new Toko();
-        t.kode = kode;
-        t.nama = nama;
-        t.alamat = alamat;
-        t.kodePos = kodePos;
-        t.status = status;
-        toko.put(kode, t);
-    }
-
-    public static void addProduk(String kode, String nama, Double harga, int stok, int terjual, String tipe,
-            String kodePenjual, Double ongkir) {
-        Produk p = new Produk();
-        p.kode = kode;
-        p.nama = nama;
-        p.harga = harga;
-        p.stok = stok;
-        p.banyakTerjual = terjual;
-        p.tipe = tipe;
-        p.kodePenjual = kodePenjual;
-        p.ongkir = ongkir;
-        produks.put(kode, p);
-    }
-
-    public static void addMakanan(String kode, String nama, Double harga, int stok, int terjual, String tipe,
-            String kodePenjual, Double ongkir, String kurir, Date estimasi) {
-        Makanan m = new Makanan();
-        m.kode = kode;
-        m.nama = nama;
-        m.harga = harga;
-        m.stok = stok;
-        m.banyakTerjual = terjual;
-        m.tipe = tipe;
-        m.kodePenjual = kodePenjual;
-        m.ongkir = ongkir;
-        m.namaKurir = kurir;
-        m.estimasiKedatangan = estimasi;
-        makanan.put(kode, m);
-    }
-
-    public static void addPayLater(String userid, List<Double> tagihanList) {
-        PayLater p = new PayLater();
-        p.userid = userid;
-        p.tagihan.addAll(tagihanList);
-        paylater.put(userid, p);
-    }
-
-    public static void addPinjaman(String userid, SPinjam pinjaman) {
-        pinjam.get(userid).add(pinjaman);
-    }
-
-    public static void addRiwayat(String userid, Riwayat entries) {
-        riwayat.get(userid).push(entries);
-    }
-
-    public static void addTagihan(String kode, String nama, Double harga, int stok, int terjual,
-            String tipe, String kodePenjual, Double ongkir) {
-        Produk t = new Produk();
-        t.kode = kode;
-        t.nama = nama;
-        t.harga = harga;
-        t.stok = stok;
-        t.banyakTerjual = terjual;
-        t.tipe = tipe;
-        t.kodePenjual = kodePenjual;
-        t.ongkir = ongkir;
-        tagihan.put(kode, t);
+            Double val = paylater.get(loginUser.username).tagihan.get(i);
+            val += cicilan;
+            paylater.get(loginUser.username).tagihan.set(i, val);
+        }
+        System.out.println("Pembayaran berhasil! Total tagihan: " + totalBayar);
+        System.out.println("Cicilan per bulan: " + cicilan);
+        System.out.println("Jangka waktu: " + jangkaBulan + " bulan");
     }
 
     public static void tampilkanProduk() {
@@ -309,9 +407,7 @@ public class Main {
     }
 
     public static void tampilkanTagihan() {
-        System.out.print("\nMasukkan username untuk melihat tagihan: ");
-        String username = input.nextLine();
-        PayLater pl = paylater.get(username);
+        PayLater pl = paylater.get(loginUser.username);
         if (pl == null || pl.tagihan.isEmpty()) {
             System.out.println("Tidak ada tagihan.");
             return;
@@ -323,9 +419,7 @@ public class Main {
     }
 
     public static void tampilkanPinjaman() {
-        System.out.print("\nMasukkan username untuk melihat pinjaman: ");
-        String username = input.nextLine();
-        PriorityQueue<SPinjam> queue = pinjam.get(username);
+        ArrayDeque<SPinjam> queue = pinjam.get(loginUser.username);
         if (queue == null || queue.isEmpty()) {
             System.out.println("Tidak ada data pinjaman.");
             return;
@@ -338,9 +432,7 @@ public class Main {
     }
 
     public static void tampilkanRiwayat() {
-        System.out.print("\nMasukkan username untuk melihat riwayat: ");
-        String username = input.nextLine();
-        Stack<Riwayat> stack = riwayat.get(username);
+        Stack<Riwayat> stack = riwayat.get(loginUser.username);
         if (stack == null || stack.isEmpty()) {
             System.out.println("Tidak ada riwayat ditemukan.");
             return;
@@ -355,8 +447,7 @@ public class Main {
     public static void tampilkanTagihanProduk() {
         System.out.println("\n--- Daftar Tagihan Listrik dan Air ---");
         for (Produk t : tagihan.values()) {
-            System.out.println(t.kode + " | " + t.nama + " | Tipe: " + t.tipe +
-                    " | Harga: Rp" + t.harga);
+            System.out.println(t.kode + " - " + t.nama + ", Harga: " + t.harga + ", Stok: " + t.stok);
         }
     }
 }
