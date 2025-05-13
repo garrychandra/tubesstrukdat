@@ -16,8 +16,7 @@ public class Main {
     static HashMap<String, PayLater> paylater = new HashMap<>();
     static HashMap<String, PriorityQueue<SPinjam>> pinjam = new HashMap<>();
     public static void main(String[] args) {
-
-        System.out.println("HEllo");
+        
         // Add Users
         addUser("alice", "pass123", "081234567890", "Jl. Mawar 12", 100000.0, "Alice");
         addUser("bob", "bobpass", "082233445566", "Jl. Melati 21", 75000.0, "Bob");
@@ -56,7 +55,6 @@ public class Main {
         addTagihan("TAG003", "Tagihan Listrik PLN",250000.0, 100000, 0, "PLN", "T004", 0.0);
         addTagihan("TAG004", "Tagihan Air PAM", 250000.0, 100000, 0, "PAM", "T005", 0.0);
 
-
         // Add SPinjam (Pinjaman)
         addPinjaman("alice", List.of(
                 new SPinjam() {
@@ -73,6 +71,7 @@ public class Main {
                         jangka = 2;
                     }
                 }));
+
         addPinjaman("bob", List.of(
                 new SPinjam() {
                     {
@@ -91,7 +90,7 @@ public class Main {
                 }));
 
         // Add Riwayat
-        addRiwayat("alice", List.of(
+        addRiwayat("alice",
                 new Riwayat() {
                     {
                         kodePembeli = "alice";
@@ -100,8 +99,9 @@ public class Main {
                         tanggal = new Date();
                         status = "Selesai";
                     }
-                },
-                new Riwayat() {
+                });
+
+        addRiwayat("alice", new Riwayat() {
                     {
                         kodePembeli = "alice";
                         produk = makanan.get("M001");
@@ -109,68 +109,67 @@ public class Main {
                         tanggal = new Date();
                         status = "Dikirim";
                     }
-                }));
-        addRiwayat("bob", List.of(
-                new Riwayat() {
-                    {
-                        kodePembeli = "bob";
-                        produk = produks.get("P002");
-                        jumlah = 1;
-                        tanggal = new Date();
-                        status = "Selesai";
-                    }
-                },
-                new Riwayat() {
-                    {
-                        kodePembeli = "bob";
-                        produk = makanan.get("M002");
-                        jumlah = 2;
-                        tanggal = new Date();
-                        status = "Diproses";
-                    }
-                }));
-        addRiwayat("carol", List.of(
-                new Riwayat() {
-                    {
-                        kodePembeli = "carol";
-                        produk = produks.get("P004");
-                        jumlah = 3;
-                        tanggal = new Date();
-                        status = "Selesai";
-                    }
-                }));
-        addRiwayat("dave", List.of(
-                new Riwayat() {
-                    {
-                        kodePembeli = "dave";
-                        produk = makanan.get("M004");
-                        jumlah = 1;
-                        tanggal = new Date();
-                        status = "Dikirim";
-                    }
-                }));
-        addRiwayat("alice", List.of(
-                new RiwayatTagihan() {
-                    {
-                        kodePembeli = "alice";
-                        produk = tagihan.get("TAG001");
-                        jumlah = 1;
-                        tanggal = new Date();
-                        status = "Dikirim";
-                        token = "PLN-88F3-BC27";
-                    }
-                },
-                new RiwayatTagihan() {
-                    {
-                        kodePembeli = "alice";
-                        produk = tagihan.get("TAG002");
-                        jumlah = 1;
-                        tanggal = new Date();
-                        status = "Dikirim";
-                        token = "PAM-96F3-BC27";
-                    }
-                }));
-
+            });
+        // addRiwayat("bob", List.of(
+        //         new Riwayat() {
+        //             {
+        //                 kodePembeli = "bob";
+        //                 produk = produks.get("P002");
+        //                 jumlah = 1;
+        //                 tanggal = new Date();
+        //                 status = "Selesai";
+        //             }
+        //         },
+        //         new Riwayat() {
+        //             {
+        //                 kodePembeli = "bob";
+        //                 produk = makanan.get("M002");
+        //                 jumlah = 2;
+        //                 tanggal = new Date();
+        //                 status = "Diproses";
+        //             }
+        //         }));
+        // addRiwayat("carol", List.of(
+        //         new Riwayat() {
+        //             {
+        //                 kodePembeli = "carol";
+        //                 produk = produks.get("P004");
+        //                 jumlah = 3;
+        //                 tanggal = new Date();
+        //                 status = "Selesai";
+        //             }
+        //         }));
+        // addRiwayat("dave", List.of(
+        //         new Riwayat() {
+        //             {
+        //                 kodePembeli = "dave";
+        //                 produk = makanan.get("M004");
+        //                 jumlah = 1;
+        //                 tanggal = new Date();
+        //                 status = "Dikirim";
+        //             }
+        //         }));
+        // addRiwayat("alice", List.of(
+        //         new RiwayatTagihan() {
+        //             {
+        //                 kodePembeli = "alice";
+        //                 produk = tagihan.get("TAG001");
+        //                 jumlah = 1;
+        //                 tanggal = new Date();
+        //                 status = "Dikirim";
+        //                 token = "PLN-88F3-BC27";
+        //             }
+        //         },
+        //         new RiwayatTagihan() {
+        //             {
+        //                 kodePembeli = "alice";
+        //                 produk = tagihan.get("TAG002");
+        //                 jumlah = 1;
+        //                 tanggal = new Date();
+        //                 status = "Dikirim";
+        //                 token = "PAM-96F3-BC27";
+        //             }
+        //         }));
 
         
         if (login()) {
@@ -204,6 +203,7 @@ public class Main {
         }
     }
 
+
     public static void menu() {
         while (true) {
             System.out.println("\n=== MENU UTAMA ===");
@@ -212,7 +212,8 @@ public class Main {
             System.out.println("3. Tagihan");
             System.out.println("4. SPinjam");
             System.out.println("5. Riwayat");
-            System.out.println("6. Exit");
+            System.out.println("6. Top up Shopee pay");
+            System.out.println("7. Exit");
             System.out.print("Pilih menu: ");
 
             String pilihan = input.nextLine();
@@ -234,6 +235,8 @@ public class Main {
                     tampilkanRiwayat();
                     break;
                 case "6":
+                    break;
+                case "7":
                     System.out.println("Keluar dari program. Terima kasih!");
                     return;
                 default:
@@ -307,12 +310,9 @@ public class Main {
         pinjam.put(userid, queue);
     }
 
-    public static void addRiwayat(String userid, List<Riwayat> entries) {
-        Stack<Riwayat> stack = new Stack<>();
-        for (Riwayat r : entries) {
-            stack.push(r);
-        }
-        riwayat.put(userid, stack);
+    public static void addRiwayat(String userid, Riwayat entries) {
+        
+        riwayat.get(userid).push(entries);
     }
 
     public static void addTagihan(String kode, String nama, Double harga, int stok, int terjual,
@@ -394,5 +394,4 @@ public class Main {
                     " | Harga: Rp" + t.harga);
         }
     }
-
 }
