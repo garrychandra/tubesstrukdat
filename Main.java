@@ -16,6 +16,8 @@ public class Main {
     static HashMap<String, PayLater> paylater = new HashMap<>();
     static HashMap<String, PriorityQueue<SPinjam>> pinjam = new HashMap<>();
     public static void main(String[] args) {
+
+        System.out.println("HEllo");
         // Add Users
         addUser("alice", "pass123", "081234567890", "Jl. Mawar 12", 100000.0, "Alice");
         addUser("bob", "bobpass", "082233445566", "Jl. Melati 21", 75000.0, "Bob");
@@ -53,6 +55,7 @@ public class Main {
         addTagihan("TAG002", "Tagihan Air PAM", 100000.0, 100000, 0, "PAM", "T005", 0.0);
         addTagihan("TAG003", "Tagihan Listrik PLN",250000.0, 100000, 0, "PLN", "T004", 0.0);
         addTagihan("TAG004", "Tagihan Air PAM", 250000.0, 100000, 0, "PAM", "T005", 0.0);
+
 
         // Add SPinjam (Pinjaman)
         addPinjaman("alice", List.of(
