@@ -7,6 +7,7 @@ import java.util.Stack;
 
 public class Main {
     static Scanner input = new Scanner(System.in);
+    static User loginUser = new User();
     static HashMap<String, User> user = new HashMap<>();
     static HashMap<String, Produk> produks = new HashMap<>();
     static HashMap<String, Makanan> makanan = new HashMap<>();
@@ -56,120 +57,89 @@ public class Main {
         addTagihan("TAG004", "Tagihan Air PAM", 250000.0, 100000, 0, "PAM", "T005", 0.0);
 
         // Add SPinjam (Pinjaman)
-        addPinjaman("alice", List.of(
-                new SPinjam() {
-                    {
+        addPinjaman("alice", new SPinjam() {{
                         hutang = 50000.0;
                         bunga = 0.10;
                         jangka = 3;
-                    }
-                },
-                new SPinjam() {
-                    {
+                    }});
+        addPinjaman("alice", new SPinjam() {{
                         hutang = 30000.0;
                         bunga = 0.08;
                         jangka = 2;
-                    }
-                }));
+                    }});
 
-        addPinjaman("bob", List.of(
-                new SPinjam() {
-                    {
+        addPinjaman("bob", new SPinjam() {{
                         hutang = 20000.0;
                         bunga = 0.05;
                         jangka = 1;
-                    }
-                }));
-        addPinjaman("dave", List.of(
-                new SPinjam() {
-                    {
+                    }});
+        addPinjaman("dave", new SPinjam() {{
                         hutang = 75000.0;
                         bunga = 0.12;
                         jangka = 4;
-                    }
-                }));
+                    }});
 
         // Add Riwayat
         addRiwayat("alice",
-                new Riwayat() {
-                    {
+                new Riwayat() {{
                         kodePembeli = "alice";
                         produk = produks.get("P001");
                         jumlah = 2;
                         tanggal = new Date();
                         status = "Selesai";
-                    }
-                });
+                    }});
 
-        addRiwayat("alice", new Riwayat() {
-                    {
+        addRiwayat("alice", new Riwayat() {{
                         kodePembeli = "alice";
                         produk = makanan.get("M001");
                         jumlah = 1;
                         tanggal = new Date();
                         status = "Dikirim";
-                    }
-            });
-        // addRiwayat("bob", List.of(
-        //         new Riwayat() {
-        //             {
-        //                 kodePembeli = "bob";
-        //                 produk = produks.get("P002");
-        //                 jumlah = 1;
-        //                 tanggal = new Date();
-        //                 status = "Selesai";
-        //             }
-        //         },
-        //         new Riwayat() {
-        //             {
-        //                 kodePembeli = "bob";
-        //                 produk = makanan.get("M002");
-        //                 jumlah = 2;
-        //                 tanggal = new Date();
-        //                 status = "Diproses";
-        //             }
-        //         }));
-        // addRiwayat("carol", List.of(
-        //         new Riwayat() {
-        //             {
-        //                 kodePembeli = "carol";
-        //                 produk = produks.get("P004");
-        //                 jumlah = 3;
-        //                 tanggal = new Date();
-        //                 status = "Selesai";
-        //             }
-        //         }));
-        // addRiwayat("dave", List.of(
-        //         new Riwayat() {
-        //             {
-        //                 kodePembeli = "dave";
-        //                 produk = makanan.get("M004");
-        //                 jumlah = 1;
-        //                 tanggal = new Date();
-        //                 status = "Dikirim";
-        //             }
-        //         }));
-        // addRiwayat("alice", List.of(
-        //         new RiwayatTagihan() {
-        //             {
-        //                 kodePembeli = "alice";
-        //                 produk = tagihan.get("TAG001");
-        //                 jumlah = 1;
-        //                 tanggal = new Date();
-        //                 status = "Dikirim";
-        //                 token = "PLN-88F3-BC27";
-        //             }
-        //         },
-        //         new RiwayatTagihan() {
-        //             {
-        //                 kodePembeli = "alice";
-        //                 produk = tagihan.get("TAG002");
-        //                 jumlah = 1;
-        //                 tanggal = new Date();
-        //                 status = "Dikirim";
-        //                 token = "PAM-96F3-BC27";
-        //             }
-        //         }));
+                    }});
+        addRiwayat("bob", new Riwayat() {{
+                        kodePembeli = "bob";
+                        produk = produks.get("P002");
+                        jumlah = 1;
+                        tanggal = new Date();
+                        status = "Selesai";
+                    }});
+        addRiwayat("bob", new Riwayat() {{
+                        kodePembeli = "bob";
+                        produk = makanan.get("M002");
+                        jumlah = 2;
+                        tanggal = new Date();
+                        status = "Diproses";
+                    }});
+        addRiwayat("carol", new Riwayat() {{
+                        kodePembeli = "carol";
+                        produk = produks.get("P004");
+                        jumlah = 3;
+                        tanggal = new Date();
+                        status = "Selesai";
+                    }});
+        addRiwayat("dave", new Riwayat() {{
+                        kodePembeli = "dave";
+                        produk = makanan.get("M004");
+                        jumlah = 1;
+                        tanggal = new Date();
+                        status = "Dikirim";
+                    }});
+        addRiwayat("alice", new RiwayatTagihan() {{
+                        kodePembeli = "alice";
+                        produk = tagihan.get("TAG001");
+                        jumlah = 1;
+                        tanggal = new Date();
+                        status = "Dikirim";
+                        token = "PLN-88F3-BC27";
+                    }});
+        addRiwayat("alice", new RiwayatTagihan() {{
+                        kodePembeli = "alice";
+                        produk = tagihan.get("TAG002");
+                        jumlah = 1;
+                        tanggal = new Date();
+                        status = "Dikirim";
+                        token = "PAM-96F3-BC27";
+                    }});
 
         
         if (login()) {
@@ -190,13 +160,11 @@ public class Main {
                 User u = user.get(username);
                 if (u.password.equals(password)) {
                     System.out.println("Login berhasil. Selamat datang, " + u.name + "!");
+                    loginUser = u;
                     return true;
                 } else {
                     System.out.println("Password salah. Silakan coba lagi.\n");
                 }
-            } else if (username.equals("admin") && password.equals("admin")) {
-                System.out.println("Login sebagai admin berhasil!");
-                return true;
             } else {
                 System.out.println("Username tidak ditemukan. Silakan coba lagi.\n");
             }
@@ -304,14 +272,11 @@ public class Main {
         paylater.put(userid, p);
     }
 
-    public static void addPinjaman(String userid, List<SPinjam> pinjamList) {
-        PriorityQueue<SPinjam> queue = new PriorityQueue<>((a, b) -> b.jangka - a.jangka);
-        queue.addAll(pinjamList);
-        pinjam.put(userid, queue);
+    public static void addPinjaman(String userid, SPinjam pinjaman) {
+        pinjam.get(userid).add(pinjaman);
     }
 
     public static void addRiwayat(String userid, Riwayat entries) {
-        
         riwayat.get(userid).push(entries);
     }
 
