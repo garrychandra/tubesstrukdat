@@ -56,11 +56,12 @@ public class Main {
             System.out.println("\n=== MENU UTAMA ===");
             System.out.println("1. Produk");
             System.out.println("2. Makanan");
-            System.out.println("3. Tagihan");
+            System.out.println("3. Utilities");
             System.out.println("4. SPinjam");
             System.out.println("5. Riwayat");
             System.out.println("6. Top up Shopee pay");
-            System.out.println("7. Exit");
+            System.out.println("7. Tagihan PayLater");
+            System.out.println("8. Exit");
             System.out.print("Pilih menu: ");
 
             String pilihan = input.nextLine();
@@ -88,8 +89,12 @@ public class Main {
                     tampilkanRiwayat();
                     break;
                 case "6":
+                // Top up Shopee pay
                     break;
                 case "7":
+                    tampilkanPayLater();
+                    break;
+                case "8":
                     System.out.println("Keluar dari program. Terima kasih!");
                     return;
                 default:
@@ -431,6 +436,18 @@ public class Main {
         }
     }
 
+    public static void tampilkanPayLater() {
+        PayLater pl = paylater.get(loginUser.username);
+        if (pl == null || pl.tagihan.isEmpty()) {
+            System.out.println("Tidak ada tagihan.");
+            return;
+        }
+        System.out.println("--- Tagihan PayLater ---");
+        for (Double t : pl.tagihan) {
+            System.out.println("Rp" + t);
+        }
+    }
+
     public static void tampilkanRiwayat() {
         Stack<Riwayat> stack = riwayat.get(loginUser.username);
         if (stack == null || stack.isEmpty()) {
@@ -439,8 +456,15 @@ public class Main {
         }
         System.out.println("--- Riwayat Pembelian ---");
         for (Riwayat r : stack) {
+            String tambahan = "";
+            if(r instanceof RiwayatTagihan) {
+                tambahan += ", Token: " + ((RiwayatTagihan) r).token;
+            }
+            if(r.produk instanceof Makanan) {
+                tambahan += ", Estimasi Kedatangan: " + ((Makanan) r.produk).estimasiKedatangan + ", Nama Kurir: " + ((Makanan) r.produk).namaKurir;
+            } 
             System.out.println("Produk: " + r.produk.nama + ", Jumlah: " + r.jumlah + ", Tanggal: " + r.tanggal
-                    + ", Status: " + r.status);
+                    + ", Status: " + r.status + tambahan);
         }
     }
 
