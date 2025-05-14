@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -24,6 +23,8 @@ public class Main {
         if (login()) {
             menu();
         }
+        input.close();
+        System.exit(0);
     }
 
     public static Boolean login() {
@@ -318,62 +319,83 @@ public class Main {
     public static void beliProduk(String kode, int jumlah) {
         Produk p = produks.get(kode);
         if (p != null && p.stok >= jumlah) {
-            System.out.println("Pilih metode pembayaran:");
-            System.out.println("1. PayLater");
-            System.out.println("2. Shopee Pay");
-            String metode = input.nextLine();
-            if (metode.equals("1")) {
-                bayarDenganPayLater(kode, jumlah * p.harga);
-            } else if (metode.equals("2")) {
-                if (loginUser.saldo >= jumlah * p.harga) {
-                    loginUser.saldo -= jumlah * p.harga;
-                    System.out.println("Pembayaran berhasil! Saldo tersisa: " + loginUser.saldo);
-                } else {
-                    System.out.println("Saldo tidak cukup.");
-                    return;
-                }
-            } else {
-                System.out.println("Metode pembayaran tidak valid.");
-                return;
+            Double totalBayar = p.harga * jumlah;
+            if(pilihBayar(totalBayar)){
+                p.stok -= jumlah;
+                Riwayat r = new Riwayat();
+                r.kodePembeli = loginUser.username;
+                r.produk = p;
+                r.jumlah = jumlah;
+                r.tanggal = new Date();
+                r.status = "Selesai";
+                addRiwayat(loginUser.username, r);
+                System.out.println("Pembelian berhasil!");
             }
-            p.stok -= jumlah;
-            Riwayat r = new Riwayat();
-            r.kodePembeli = loginUser.username;
-            r.produk = p;
-            r.jumlah = jumlah;
-            r.tanggal = new Date();
-            r.status = "Selesai";
-            addRiwayat(loginUser.username, r);
-            System.out.println("Pembelian berhasil!");
         } else {
             System.out.println("Stok tidak cukup atau produk tidak ditemukan.");
         }
     }
 
-    public static void bayarDenganPayLater(String kode, double jumlah){
+    public static Boolean pilihBayar(Double totalBayar){
+        Boolean pilihanValid = false;
+        while(!pilihanValid){
+            System.out.println("Pilih metode pembayaran:");
+            System.out.println("1. PayLater");
+            System.out.println("2. Shopee Pay");
+            System.out.println("3. Kembali ke Menu Utama");
+            String metode = input.nextLine();
+
+            switch (metode) {
+                case "1":
+                    pilihanValid = bayarDenganPayLater(totalBayar);
+                    break;
+                case "2":
+                    if (loginUser.saldo >= totalBayar) {
+                        loginUser.saldo -= totalBayar;
+                        pilihanValid = true;
+                        System.out.println("Pembayaran berhasil! Saldo tersisa: " + loginUser.saldo);
+                    } else {
+                        System.out.println("Saldo tidak cukup.");
+                    }   
+                    break;
+                case "3":
+                    return pilihanValid;
+                default:
+                    System.out.println("Metode pembayaran tidak valid.");
+                    break;
+            }
+        }
+        return pilihanValid;
+    }
+
+    public static Boolean bayarDenganPayLater(double jumlah){
         System.out.println("jangka cicilan paylater: ");
         System.out.println("1. 1 bulan");
         System.out.println("2. 3 bulan");
         System.out.println("3. 6 bulan");
         System.out.println("4. 12 bulan");
+        System.out.println("5. Kembali ke Pemilihan Pembayaran ");
         String jangka = input.nextLine();
         int jangkaBulan = 0;
-        switch (jangka) {
-            case "1":
-                jangkaBulan = 1;
-                break;
-            case "2":
-                jangkaBulan = 3;
-                break;
-            case "3":
-                jangkaBulan = 6;
-                break;
-            case "4":
-                jangkaBulan = 12;
-                break;
-            default:
-                System.out.println("Pilihan tidak valid.");
-                return;
+        while(jangkaBulan == 0){
+            switch (jangka) {
+                case "1":
+                    jangkaBulan = 1;
+                    break;
+                case "2":
+                    jangkaBulan = 3;
+                    break;
+                case "3":
+                    jangkaBulan = 6;
+                    break;
+                case "4":
+                    jangkaBulan = 12;
+                    break;
+                case "5":
+                    return false;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
         }
         double totalBayar = jumlah*(1+payLaterFee);
         double cicilan = totalBayar / jangkaBulan;
@@ -382,7 +404,7 @@ public class Main {
                 paylater.put(loginUser.username, new PayLater());
             } 
             if(paylater.get(loginUser.username).tagihan == null){
-                paylater.get(loginUser.username).tagihan = new ArrayList<Double>();
+                paylater.get(loginUser.username).tagihan = new ArrayList<>();
             } 
             if(paylater.get(loginUser.username).tagihan.size() < i+1){
                 paylater.get(loginUser.username).tagihan.add(0.0);
@@ -395,6 +417,7 @@ public class Main {
         System.out.println("Pembayaran berhasil! Total tagihan: " + totalBayar);
         System.out.println("Cicilan per bulan: " + cicilan);
         System.out.println("Jangka waktu: " + jangkaBulan + " bulan");
+        return true;
     }
 
     public static void tampilkanProduk() {
