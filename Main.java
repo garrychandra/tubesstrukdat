@@ -491,18 +491,24 @@ public class Main {
     public static void bayarPinjam(Double nominal){
         while(nominal > 0){
             SPinjam p = pinjam.get(loginUser.username).getFirst();
-            Double hutang = p.hutang + (p.hutang * p.bunga / 12 * p.jangka);
-            if(hutang - nominal <= 0){
+            Double bunga = (p.hutang * p.bunga / 12 * p.jangka);
+            Double hutang = p.hutang;
+            if(hutang + bunga - nominal <= 0){
                 nominal -= hutang;
+                nominal -= bunga;
                 pinjam.get(loginUser.username).remove();
             } else {
-                hutang -= nominal;
-                //hutang -=  (hutang / p.bunga * 12 / p.jangka);
+                if(bunga < nominal){
+                    nominal -= bunga;
+                    hutang -= nominal;
+                } else {
+                    bunga -= nominal;
+                    hutang += bunga;
+                }
+                p.bunga = 0.0;
                 p.hutang = hutang;
-                System.out.println(p.hutang);
                 nominal = 0.0;
             }
-            
         }
     }
 

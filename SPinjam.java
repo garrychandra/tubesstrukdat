@@ -5,6 +5,8 @@ public class SPinjam {
     Double bunga;
     int jangka;
 
+    public SPinjam() {}
+
     public SPinjam(Double hutang, Double bunga, int jangka) {
         this.hutang = hutang;
         this.bunga = bunga;
