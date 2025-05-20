@@ -13,6 +13,7 @@ public class Main {
     static User loginUser = new User();
     static Random rand = new Random();
     static Double payLaterFee = 0.02;
+    static Double[] bunga = {0.15,0.145,0.14,0.135,0.13,0.125,0.12,0.115,0.11,0.1,0.09,0.08};
     static HashMap<String, User> user = new HashMap<>();
     static HashMap<String, Produk> produks = new HashMap<>();
     static HashMap<String, Produk> makanan = new HashMap<>();
@@ -97,6 +98,21 @@ public class Main {
                     break;
                 case "4":
                     tampilkanPinjaman();
+                    System.out.println("1. Pinjam");
+                    System.out.println("2. Bayar");
+                    System.out.println("Pilihan: ");
+                    int choice = input.nextInt();
+                    if(choice == 1){
+                        input.nextLine();
+                        newPinjam();
+                    } else if (choice == 2){
+                        input.nextLine();
+                        System.out.println("Nominal Bayar: ");
+                        bayarPinjam(input.nextDouble());
+                        input.nextLine();
+                    } else {
+                        System.out.println("invalid input, returning to menu");
+                    }
                     break;
                 case "5":
                     tampilkanRiwayat();
@@ -454,6 +470,42 @@ public class Main {
         loginUser.saldo += input.nextDouble();
     }
 
+    public static void newPinjam(){
+        SPinjam p = new SPinjam();
+        System.out.println("Jumlah Pinjam: ");
+        p.hutang = input.nextDouble();
+        input.nextLine();
+        System.out.println("Jangka Pinjam(1-12): ");
+        p.jangka = input.nextInt();
+        input.nextLine();
+        p.bunga = bunga[p.jangka-1];
+
+        pinjam.get(loginUser.username).add(p);
+
+        System.out.println("Hutang: Rp" + p.hutang);
+        System.out.println("Bunga: Rp" + p.bunga);
+        System.out.println("Jangka: Rp" + p.jangka);
+        System.out.println("Total: Rp" + p.hutang * p.bunga / 12 * p.jangka);
+    }
+
+    public static void bayarPinjam(Double nominal){
+        while(nominal > 0){
+            SPinjam p = pinjam.get(loginUser.username).getFirst();
+            Double hutang = p.hutang + (p.hutang * p.bunga / 12 * p.jangka);
+            if(hutang - nominal <= 0){
+                nominal -= hutang;
+                pinjam.get(loginUser.username).remove();
+            } else {
+                hutang -= nominal;
+                //hutang -=  (hutang / p.bunga * 12 / p.jangka);
+                p.hutang = hutang;
+                System.out.println(p.hutang);
+                nominal = 0.0;
+            }
+            
+        }
+    }
+
     public static Boolean pilihBayar(Double totalBayar){
         Boolean pilihanValid = false;
         while(!pilihanValid){
@@ -573,7 +625,7 @@ public class Main {
         System.out.println("--- Data SPinjam ---");
         for (SPinjam s : queue) {
             System.out.println(
-                    "Hutang: Rp" + s.hutang + ", Bunga: " + (s.bunga * 100) + "%");
+                    "Hutang: Rp" + (s.hutang + (s.hutang * s.bunga / 12 * s.jangka)));
         }
     }
 
