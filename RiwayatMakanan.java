@@ -1,6 +1,6 @@
 import java.util.Date;
 
-public class Makanan extends Produk{
+public class RiwayatMakanan extends Riwayat{
     Date estimasiKedatangan;
     String namaKurir;
 }

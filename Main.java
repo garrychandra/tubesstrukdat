@@ -3,16 +3,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     static Scanner input = new Scanner(System.in);
     static User loginUser = new User();
+    static Random rand = new Random();
     static Double payLaterFee = 0.02;
     static HashMap<String, User> user = new HashMap<>();
     static HashMap<String, Produk> produks = new HashMap<>();
-    static HashMap<String, Makanan> makanan = new HashMap<>();
+    static HashMap<String, Produk> makanan = new HashMap<>();
     static HashMap<String, Produk> tagihan = new HashMap<>();
     static HashMap<String, Toko> toko = new HashMap<>();
     static HashMap<String, Stack<Riwayat>> riwayat = new HashMap<>();
@@ -68,6 +71,7 @@ public class Main {
             String pilihan = input.nextLine();
 
             switch (pilihan) {
+                
                 case "1":
                     tampilkanProduk();
                     System.out.print("Masukkan kode produk yang ingin dibeli: ");
@@ -79,9 +83,17 @@ public class Main {
                     break;
                 case "2":
                     tampilkanMakanan();
+                    System.out.print("Masukkan kode makanan yang ingin dibeli: ");
+                    kode = input.nextLine();
+                    System.out.print("Masukkan jumlah yang ingin dibeli: ");
+                    jumlah = input.nextInt();
+                    beliMakanan(kode, jumlah, pilihKurir());
                     break;
                 case "3":
                     tampilkanTagihan();
+                    System.out.print("Masukkan kode Tagihan yang ingin dibeli: ");
+                    kode = input.nextLine();
+                    beliTagihan(kode);
                     break;
                 case "4":
                     tampilkanPinjaman();
@@ -90,7 +102,8 @@ public class Main {
                     tampilkanRiwayat();
                     break;
                 case "6":
-                // Top up Shopee pay
+                    topUp();
+                    System.out.println("Top Up ShopeePay Berhasil");
                     break;
                 case "7":
                     tampilkanPayLater();
@@ -141,8 +154,8 @@ public class Main {
     }
 
     public static void addMakanan(String kode, String nama, Double harga, int stok, int terjual, String tipe,
-            String kodePenjual, Double ongkir, String kurir, Date estimasi) {
-        Makanan m = new Makanan();
+            String kodePenjual, Double ongkir) {
+        Produk m = new Produk();
         m.kode = kode;
         m.nama = nama;
         m.harga = harga;
@@ -151,8 +164,6 @@ public class Main {
         m.tipe = tipe;
         m.kodePenjual = kodePenjual;
         m.ongkir = ongkir;
-        m.namaKurir = kurir;
-        m.estimasiKedatangan = estimasi;
         makanan.put(kode, m);
     }
 
@@ -212,10 +223,10 @@ public class Main {
         addProduk("P004", "Tissue", 8000.0, 70, 6, "Non-Makanan", "T001", 2500.0);
 
         // Add Makanan
-        addMakanan("M001", "Nasi Goreng", 20000.0, 30, 10, "Makanan", "T001", 7000.0, "Kurir A", new Date());
-        addMakanan("M002", "Bakso", 18000.0, 25, 8, "Makanan", "T002", 6000.0, "Kurir B", new Date());
-        addMakanan("M003", "Ayam Geprek", 22000.0, 20, 12, "Makanan", "T003", 6500.0, "Kurir C", new Date());
-        addMakanan("M004", "Sate Ayam", 25000.0, 15, 9, "Makanan", "T002", 8000.0, "Kurir D", new Date());
+        addMakanan("M001", "Nasi Goreng", 20000.0, 30, 10, "Makanan", "T001", 7000.0);
+        addMakanan("M002", "Bakso", 18000.0, 25, 8, "Makanan", "T002", 6000.0);
+        addMakanan("M003", "Ayam Geprek", 22000.0, 20, 12, "Makanan", "T003", 6500.0);
+        addMakanan("M004", "Sate Ayam", 25000.0, 15, 9, "Makanan", "T002", 8000.0);
 
         // Add PayLater (Tagihan)
         addPayLater("alice", List.of(25000.0, 12000.0));
@@ -263,12 +274,14 @@ public class Main {
                         status = "Selesai";
                     }});
 
-        addRiwayat("alice", new Riwayat() {{
+        addRiwayat("alice", new RiwayatMakanan() {{
                         kodePembeli = "alice";
                         produk = makanan.get("M001");
                         jumlah = 1;
                         tanggal = new Date();
                         status = "Dikirim";
+                        estimasiKedatangan = estimasiPengiriman();
+                        namaKurir = "sal";
                     }});
         addRiwayat("bob", new Riwayat() {{
                         kodePembeli = "bob";
@@ -277,12 +290,14 @@ public class Main {
                         tanggal = new Date();
                         status = "Selesai";
                     }});
-        addRiwayat("bob", new Riwayat() {{
+        addRiwayat("bob", new RiwayatMakanan() {{
                         kodePembeli = "bob";
                         produk = makanan.get("M002");
                         jumlah = 2;
                         tanggal = new Date();
                         status = "Diproses";
+                        estimasiKedatangan = estimasiPengiriman();
+                        namaKurir = "nick";
                     }});
         addRiwayat("carol", new Riwayat() {{
                         kodePembeli = "carol";
@@ -291,12 +306,14 @@ public class Main {
                         tanggal = new Date();
                         status = "Selesai";
                     }});
-        addRiwayat("dave", new Riwayat() {{
+        addRiwayat("dave", new RiwayatMakanan() {{
                         kodePembeli = "dave";
                         produk = makanan.get("M004");
                         jumlah = 1;
                         tanggal = new Date();
                         status = "Dikirim";
+                        estimasiKedatangan = estimasiPengiriman();
+                        namaKurir = "nick";
                     }});
         addRiwayat("alice", new RiwayatTagihan() {{
                         kodePembeli = "alice";
@@ -316,6 +333,10 @@ public class Main {
                     }});
     }
 
+    public static Date estimasiPengiriman(){
+        return new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5+rand.nextLong(26)));
+    }
+
     public static void beliProduk(String kode, int jumlah) {
         Produk p = produks.get(kode);
         if (p != null && p.stok >= jumlah) {
@@ -327,22 +348,119 @@ public class Main {
                 r.produk = p;
                 r.jumlah = jumlah;
                 r.tanggal = new Date();
-                r.status = "Selesai";
+                r.status = "Disiapkan";
                 addRiwayat(loginUser.username, r);
                 System.out.println("Pembelian berhasil!");
+                printRiwayat(r);
+                System.out.print("\n---Tekan enter untuk lanjut---");
+                input.nextLine();
             }
         } else {
             System.out.println("Stok tidak cukup atau produk tidak ditemukan.");
         }
     }
 
+    public static void beliMakanan(String kode, int jumlah, String kurir) {
+        Produk p = makanan.get(kode);
+        if (p != null && p.stok >= jumlah) {
+            Double totalBayar = p.harga * jumlah;
+            if(pilihBayar(totalBayar)){
+                p.stok -= jumlah;
+                RiwayatMakanan r = new RiwayatMakanan();
+                r.kodePembeli = loginUser.username;
+                r.produk = p;
+                r.jumlah = jumlah;
+                r.tanggal = new Date();
+                r.status = "Disiapkan";
+                r.estimasiKedatangan = estimasiPengiriman();
+                r.namaKurir = kurir;
+                addRiwayat(loginUser.username, r);
+                System.out.println("Pembelian berhasil!");
+                printRiwayat(r);
+                System.out.print("\n---Tekan enter untuk lanjut---");
+                input.nextLine();
+            }
+        } else {
+            System.out.println("Stok tidak cukup atau Makanan tidak ditemukan.");
+        }
+    }
+
+    public static void beliTagihan(String kode) {
+        Produk p = makanan.get(kode);
+        if (p != null) {
+            Double totalBayar = p.harga;
+            if(pilihBayar(totalBayar)){
+                RiwayatTagihan r = new RiwayatTagihan();
+                r.kodePembeli = loginUser.username;
+                r.produk = p;
+                r.jumlah = 1;
+                r.tanggal = new Date();
+                r.token = getToken();
+                r.status = "Selesai";
+                addRiwayat(loginUser.username, r);
+                System.out.println("Pembelian berhasil!");
+                printRiwayat(r);
+                System.out.print("\n---Tekan enter untuk lanjut---");
+                input.nextLine();
+            }
+        } else {
+            System.out.println("Tagihan tidak ditemukan.");
+        }
+    }
+
+    public static String getToken(){
+        String token = "";
+        token += String.format("%04d",rand.nextInt());
+        token += " - ";
+        token += String.format("%04d",rand.nextInt());
+        token += " - ";
+        token += String.format("%04d",rand.nextInt());
+        return token;
+    }
+
+    public static String pilihKurir(){
+        Boolean pilihanValid = false;
+        String kurir = "";
+        while(!pilihanValid){
+            System.out.println("1. Reguler");
+            System.out.println("2. Express");
+            System.out.println("3. VIP");
+            System.out.print("Pilih Jasa Kurir:");
+            String metode = input.nextLine();
+
+            switch (metode) {
+                case "1":
+                    pilihanValid = true;
+                    kurir = "REGULER";
+                    break;
+                case "2":
+                    pilihanValid = true;
+                    kurir = "REGULEREXPRESS";
+                    break;
+                case "3":
+                    pilihanValid = true;
+                    kurir = "VIP";
+                    break;
+                default:
+                    System.out.println("Kurir tidak valid.");
+                    break;
+            }
+        }
+        return kurir;
+    }
+
+    public static void topUp(){
+        System.out.println("Jumlah Topup: ");
+        loginUser.saldo += input.nextDouble();
+    }
+
     public static Boolean pilihBayar(Double totalBayar){
         Boolean pilihanValid = false;
         while(!pilihanValid){
-            System.out.println("Pilih metode pembayaran:");
             System.out.println("1. PayLater");
             System.out.println("2. Shopee Pay");
             System.out.println("3. Kembali ke Menu Utama");
+            System.out.print("Pilih metode pembayaran:");
             String metode = input.nextLine();
 
             switch (metode) {
@@ -369,12 +487,12 @@ public class Main {
     }
 
     public static Boolean bayarDenganPayLater(double jumlah){
-        System.out.println("jangka cicilan paylater: ");
         System.out.println("1. 1 bulan");
         System.out.println("2. 3 bulan");
         System.out.println("3. 6 bulan");
         System.out.println("4. 12 bulan");
         System.out.println("5. Kembali ke Pemilihan Pembayaran ");
+        System.out.print("jangka paylater: ");
         String jangka = input.nextLine();
         int jangkaBulan = 0;
         while(jangkaBulan == 0){
@@ -429,8 +547,8 @@ public class Main {
 
     public static void tampilkanMakanan() {
         System.out.println("\n--- Daftar Makanan ---");
-        for (Makanan m : makanan.values()) {
-            System.out.println(m.kode + " - " + m.nama + ", Harga: " + m.harga + ", Kurir: " + m.namaKurir);
+        for (Produk m : makanan.values()) {
+            System.out.println(m.kode + " - " + m.nama + ", Harga: " + m.harga);
         }
     }
 
@@ -455,7 +573,7 @@ public class Main {
         System.out.println("--- Data SPinjam ---");
         for (SPinjam s : queue) {
             System.out.println(
-                    "Hutang: Rp" + s.hutang + ", Bunga: " + (s.bunga * 100) + "%, Jangka: " + s.jangka + " bulan");
+                    "Hutang: Rp" + s.hutang + ", Bunga: " + (s.bunga * 100) + "%");
         }
     }
 
@@ -471,6 +589,18 @@ public class Main {
         }
     }
 
+    public static void printRiwayat(Riwayat r){
+        String tambahan = "";
+        if(r instanceof RiwayatTagihan) {
+            tambahan += ", Token: " + ((RiwayatTagihan) r).token;
+        }
+        if(r instanceof RiwayatMakanan) {
+            tambahan += ", Estimasi Kedatangan: " + ((RiwayatMakanan) r).estimasiKedatangan + ", Nama Kurir: " + ((RiwayatMakanan) r).namaKurir;
+        } 
+        System.out.println("Produk: " + r.produk.nama + ", Jumlah: " + r.jumlah + ", Total: " + r.produk.harga * r.jumlah +", Tanggal: " + r.tanggal
+                + ", Status: " + r.status + tambahan);
+    }
+
     public static void tampilkanRiwayat() {
         Stack<Riwayat> stack = riwayat.get(loginUser.username);
         if (stack == null || stack.isEmpty()) {
@@ -479,16 +609,10 @@ public class Main {
         }
         System.out.println("--- Riwayat Pembelian ---");
         for (Riwayat r : stack) {
-            String tambahan = "";
-            if(r instanceof RiwayatTagihan) {
-                tambahan += ", Token: " + ((RiwayatTagihan) r).token;
-            }
-            if(r.produk instanceof Makanan) {
-                tambahan += ", Estimasi Kedatangan: " + ((Makanan) r.produk).estimasiKedatangan + ", Nama Kurir: " + ((Makanan) r.produk).namaKurir;
-            } 
-            System.out.println("Produk: " + r.produk.nama + ", Jumlah: " + r.jumlah + ", Tanggal: " + r.tanggal
-                    + ", Status: " + r.status + tambahan);
+            printRiwayat(r);
         }
+        System.out.print("\n---Tekan enter untuk lanjut---");
+        input.nextLine();
     }
 
     public static void tampilkanTagihanProduk() {
