@@ -88,6 +88,7 @@ public class Main {
                     kode = input.nextLine();
                     System.out.print("Masukkan jumlah yang ingin dibeli: ");
                     jumlah = input.nextInt();
+                    input.nextLine(); // Consume newline
                     beliMakanan(kode, jumlah, pilihKurir());
                     break;
                 case "3":
@@ -102,14 +103,12 @@ public class Main {
                     System.out.println("2. Bayar");
                     System.out.println("Pilihan: ");
                     int choice = input.nextInt();
+                    input.nextLine(); // Consume newline
                     if(choice == 1){
-                        input.nextLine();
                         newPinjam();
                     } else if (choice == 2){
-                        input.nextLine();
                         System.out.println("Nominal Bayar: ");
                         bayarPinjam(input.nextDouble());
-                        input.nextLine();
                     } else {
                         System.out.println("invalid input, returning to menu");
                     }
@@ -402,7 +401,7 @@ public class Main {
     }
 
     public static void beliTagihan(String kode) {
-        Produk p = makanan.get(kode);
+        Produk p = tagihan.get(kode);
         if (p != null) {
             Double totalBayar = p.harga;
             if(pilihBayar(totalBayar)){
@@ -426,11 +425,15 @@ public class Main {
 
     public static String getToken(){
         String token = "";
-        token += String.format("%04d",rand.nextInt());
+        token += String.format("%05d",rand.nextInt(100000));
         token += " - ";
-        token += String.format("%04d",rand.nextInt());
+        token += String.format("%05d",rand.nextInt(100000));
         token += " - ";
-        token += String.format("%04d",rand.nextInt());
+        token += String.format("%05d",rand.nextInt(100000));
+        token += " - ";
+        token += String.format("%05d",rand.nextInt(100000));
+        token += " - ";
+        token += String.format("%05d",rand.nextInt(100000));
         return token;
     }
 
@@ -468,6 +471,7 @@ public class Main {
     public static void topUp(){
         System.out.println("Jumlah Topup: ");
         loginUser.saldo += input.nextDouble();
+        input.nextLine();
     }
 
     public static void newPinjam(){
@@ -489,6 +493,12 @@ public class Main {
     }
 
     public static void bayarPinjam(Double nominal){
+        // Adding null check
+        if (!pinjam.containsKey(loginUser.username) || pinjam.get(loginUser.username).isEmpty()) {
+            System.out.println("No active loans found.");
+            return;
+        }
+        input.nextLine();
         while(nominal > 0){
             SPinjam p = pinjam.get(loginUser.username).getFirst();
             Double bunga = (p.hutang * p.bunga / 12 * p.jangka);
@@ -582,8 +592,10 @@ public class Main {
             if(paylater.get(loginUser.username).tagihan == null){
                 paylater.get(loginUser.username).tagihan = new ArrayList<>();
             } 
-            if(paylater.get(loginUser.username).tagihan.size() < i+1){
-                paylater.get(loginUser.username).tagihan.add(0.0);
+            if(paylater.get(loginUser.username).tagihan.size() <= i){
+                while(paylater.get(loginUser.username).tagihan.size() <= i) {
+                    paylater.get(loginUser.username).tagihan.add(0.0);
+                }
             }
 
             Double val = paylater.get(loginUser.username).tagihan.get(i);
@@ -611,14 +623,9 @@ public class Main {
     }
 
     public static void tampilkanTagihan() {
-        PayLater pl = paylater.get(loginUser.username);
-        if (pl == null || pl.tagihan.isEmpty()) {
-            System.out.println("Tidak ada tagihan.");
-            return;
-        }
-        System.out.println("--- Tagihan PayLater ---");
-        for (Double t : pl.tagihan) {
-            System.out.println("Rp" + t);
+        System.out.println("--- Tagihan Utilities ---");
+        for (Produk p : tagihan.values()) {
+             System.out.println(p.kode + " - " + p.nama + ", Harga: " + p.harga);
         }
     }
 
@@ -645,6 +652,8 @@ public class Main {
         for (Double t : pl.tagihan) {
             System.out.println("Rp" + t);
         }
+        System.out.print("\n---Tekan enter untuk lanjut---");
+        input.nextLine();
     }
 
     public static void printRiwayat(Riwayat r){
