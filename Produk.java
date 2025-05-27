@@ -6,5 +6,4 @@ public class Produk {
     int banyakTerjual;
     String tipe;
     String kodePenjual;
-    Double ongkir;
 }

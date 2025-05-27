@@ -6,4 +6,5 @@ public class Riwayat {
     int jumlah;
     Date tanggal;
     String status;
+    String namaKurir;
 }

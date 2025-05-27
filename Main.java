@@ -144,18 +144,21 @@ public class Main {
         user.put(username, u);
     }
 
-    public static void addToko(String kode, String nama, String alamat, String kodePos, String status) {
+    public static void addToko(String kode, String nama, String alamat, String kodePos, String status, Double standardOngkir, Double expressOngkir, Double vipOngkir) {
         Toko t = new Toko();
         t.kode = kode;
         t.nama = nama;
         t.alamat = alamat;
         t.kodePos = kodePos;
         t.status = status;
+        t.ongkir[0] = standardOngkir;
+        t.ongkir[1] = expressOngkir;
+        t.ongkir[2] = vipOngkir;
         toko.put(kode, t);
     }
 
     public static void addProduk(String kode, String nama, Double harga, int stok, int terjual, String tipe,
-            String kodePenjual, Double ongkir) {
+            String kodePenjual) {
         Produk p = new Produk();
         p.kode = kode;
         p.nama = nama;
@@ -164,12 +167,11 @@ public class Main {
         p.banyakTerjual = terjual;
         p.tipe = tipe;
         p.kodePenjual = kodePenjual;
-        p.ongkir = ongkir;
         produks.put(kode, p);
     }
 
     public static void addMakanan(String kode, String nama, Double harga, int stok, int terjual, String tipe,
-            String kodePenjual, Double ongkir) {
+            String kodePenjual) {
         Produk m = new Produk();
         m.kode = kode;
         m.nama = nama;
@@ -178,7 +180,6 @@ public class Main {
         m.banyakTerjual = terjual;
         m.tipe = tipe;
         m.kodePenjual = kodePenjual;
-        m.ongkir = ongkir;
         makanan.put(kode, m);
     }
 
@@ -204,7 +205,7 @@ public class Main {
     }
 
     public static void addTagihan(String kode, String nama, Double harga, int stok, int terjual,
-            String tipe, String kodePenjual, Double ongkir) {
+            String tipe, String kodePenjual) {
         Produk t = new Produk();
         t.kode = kode;
         t.nama = nama;
@@ -213,7 +214,6 @@ public class Main {
         t.banyakTerjual = terjual;
         t.tipe = tipe;
         t.kodePenjual = kodePenjual;
-        t.ongkir = ongkir;
         tagihan.put(kode, t);
     }
 
@@ -226,22 +226,22 @@ public class Main {
         addUser("eve", "eve123", "087733344455", "Jl. Teratai 19", 95000.0, "Eve");
 
         // Add Stores
-        addToko("T001", "Toko Sukses", "Jl. Kenanga 1", "40123", "Aktif");
-        addToko("T002", "Toko Makmur", "Jl. Sakura 99", "40234", "Aktif");
-        addToko("T003", "Mart Hebat", "Jl. Jaya 77", "40345", "Aktif");
-        addToko("T004", "PLN", "", "", "Aktif");
-        addToko("T005", "PAM", "", "", "Aktif");
+        addToko("T001", "Toko Sukses", "Jl. Kenanga 1", "40123", "Aktif", 5000.0, 8000.0, 15000.0);
+        addToko("T002", "Toko Makmur", "Jl. Sakura 99", "40234", "Aktif", 6000.0, 9000.0, 16000.0);
+        addToko("T003", "Mart Hebat", "Jl. Jaya 77", "40345", "Aktif", 5500.0, 8500.0, 15500.0);
+        addToko("T004", "PLN", "", "", "Aktif", 0.0, 0.0, 0.0);
+        addToko("T005", "PAM", "", "", "Aktif", 0.0, 0.0, 0.0);
         // Add Produk
-        addProduk("P001", "Sabun Mandi", 10000.0, 50, 5, "Non-Makanan", "T001", 5000.0);
-        addProduk("P002", "Shampoo", 15000.0, 40, 3, "Non-Makanan", "T002", 4000.0);
-        addProduk("P003", "Pasta Gigi", 12000.0, 60, 7, "Non-Makanan", "T003", 3000.0);
-        addProduk("P004", "Tissue", 8000.0, 70, 6, "Non-Makanan", "T001", 2500.0);
+        addProduk("P001", "Sabun Mandi", 10000.0, 50, 5, "Non-Makanan", "T001");
+        addProduk("P002", "Shampoo", 15000.0, 40, 3, "Non-Makanan", "T002");
+        addProduk("P003", "Pasta Gigi", 12000.0, 60, 7, "Non-Makanan", "T003");
+        addProduk("P004", "Tissue", 8000.0, 70, 6, "Non-Makanan", "T001");
 
         // Add Makanan
-        addMakanan("M001", "Nasi Goreng", 20000.0, 30, 10, "Makanan", "T001", 7000.0);
-        addMakanan("M002", "Bakso", 18000.0, 25, 8, "Makanan", "T002", 6000.0);
-        addMakanan("M003", "Ayam Geprek", 22000.0, 20, 12, "Makanan", "T003", 6500.0);
-        addMakanan("M004", "Sate Ayam", 25000.0, 15, 9, "Makanan", "T002", 8000.0);
+        addMakanan("M001", "Nasi Goreng", 20000.0, 30, 10, "Makanan", "T001");
+        addMakanan("M002", "Bakso", 18000.0, 25, 8, "Makanan", "T002");
+        addMakanan("M003", "Ayam Geprek", 22000.0, 20, 12, "Makanan", "T003");
+        addMakanan("M004", "Sate Ayam", 25000.0, 15, 9, "Makanan", "T002");
 
         // Add PayLater (Tagihan)
         addPayLater("alice", List.of(25000.0, 12000.0));
@@ -251,10 +251,10 @@ public class Main {
         addPayLater("eve", List.of(15000.0, 15000.0, 5000.0));
 
         // Add Tagihan
-        addTagihan("TAG001", "Tagihan Listrik PLN", 100000.0, 100000, 0, "PLN", "T004", 0.0);
-        addTagihan("TAG002", "Tagihan Air PAM", 100000.0, 100000, 0, "PAM", "T005", 0.0);
-        addTagihan("TAG003", "Tagihan Listrik PLN",250000.0, 100000, 0, "PLN", "T004", 0.0);
-        addTagihan("TAG004", "Tagihan Air PAM", 250000.0, 100000, 0, "PAM", "T005", 0.0);
+        addTagihan("TAG001", "Tagihan Listrik PLN", 100000.0, 100000, 0, "PLN", "T004");
+        addTagihan("TAG002", "Tagihan Air PAM", 100000.0, 100000, 0, "PAM", "T005");
+        addTagihan("TAG003", "Tagihan Listrik PLN",250000.0, 100000, 0, "PLN", "T004");
+        addTagihan("TAG004", "Tagihan Air PAM", 250000.0, 100000, 0, "PAM", "T005");
 
         // Add SPinjam (Pinjaman)
         addPinjaman("alice", new SPinjam() {{
@@ -287,6 +287,7 @@ public class Main {
                         jumlah = 2;
                         tanggal = new Date();
                         status = "Selesai";
+                        namaKurir = "REGULER";
                     }});
 
         addRiwayat("alice", new RiwayatMakanan() {{
@@ -296,7 +297,7 @@ public class Main {
                         tanggal = new Date();
                         status = "Dikirim";
                         estimasiKedatangan = estimasiPengiriman();
-                        namaKurir = "sal";
+                        namaKurir = "VIP";
                     }});
         addRiwayat("bob", new Riwayat() {{
                         kodePembeli = "bob";
@@ -304,6 +305,7 @@ public class Main {
                         jumlah = 1;
                         tanggal = new Date();
                         status = "Selesai";
+                        namaKurir = "EXPRESS";
                     }});
         addRiwayat("bob", new RiwayatMakanan() {{
                         kodePembeli = "bob";
@@ -312,7 +314,7 @@ public class Main {
                         tanggal = new Date();
                         status = "Diproses";
                         estimasiKedatangan = estimasiPengiriman();
-                        namaKurir = "nick";
+                        namaKurir = "REGULER";
                     }});
         addRiwayat("carol", new Riwayat() {{
                         kodePembeli = "carol";
@@ -320,6 +322,7 @@ public class Main {
                         jumlah = 3;
                         tanggal = new Date();
                         status = "Selesai";
+                        namaKurir = "REGULER";
                     }});
         addRiwayat("dave", new RiwayatMakanan() {{
                         kodePembeli = "dave";
@@ -328,7 +331,7 @@ public class Main {
                         tanggal = new Date();
                         status = "Dikirim";
                         estimasiKedatangan = estimasiPengiriman();
-                        namaKurir = "nick";
+                        namaKurir = "REGULER";
                     }});
         addRiwayat("alice", new RiwayatTagihan() {{
                         kodePembeli = "alice";
@@ -355,15 +358,31 @@ public class Main {
     public static void beliProduk(String kode, int jumlah) {
         Produk p = produks.get(kode);
         if (p != null && p.stok >= jumlah) {
-            Double totalBayar = p.harga * jumlah;
+            Toko t = toko.get(p.kodePenjual);
+            Double ongkir = 0.0;
+            String kurir = pilihKurir();
+            switch(kurir) {
+                case "REGULER":
+                    ongkir = t.ongkir[0];
+                    break;
+                case "EXPRESS":
+                    ongkir = t.ongkir[1];
+                    break;
+                case "VIP":
+                    ongkir = t.ongkir[2];
+                    break;
+            }
+            Double totalBayar = (p.harga * jumlah) + ongkir;
             if(pilihBayar(totalBayar)){
                 p.stok -= jumlah;
-                Riwayat r = new Riwayat();
+                RiwayatMakanan r = new RiwayatMakanan();
                 r.kodePembeli = loginUser.username;
                 r.produk = p;
                 r.jumlah = jumlah;
                 r.tanggal = new Date();
                 r.status = "Disiapkan";
+                r.estimasiKedatangan = estimasiPengiriman();
+                r.namaKurir = kurir;
                 addRiwayat(loginUser.username, r);
                 System.out.println("Pembelian berhasil!");
                 printRiwayat(r);
@@ -378,7 +397,20 @@ public class Main {
     public static void beliMakanan(String kode, int jumlah, String kurir) {
         Produk p = makanan.get(kode);
         if (p != null && p.stok >= jumlah) {
-            Double totalBayar = p.harga * jumlah;
+            Toko t = toko.get(p.kodePenjual);
+            Double ongkir = 0.0;
+            switch(kurir) {
+                case "REGULER":
+                    ongkir = t.ongkir[0];
+                    break;
+                case "EXPRESS":
+                    ongkir = t.ongkir[1];
+                    break;
+                case "VIP":
+                    ongkir = t.ongkir[2];
+                    break;
+            }
+            Double totalBayar = (p.harga * jumlah) + ongkir;
             if(pilihBayar(totalBayar)){
                 p.stok -= jumlah;
                 RiwayatMakanan r = new RiwayatMakanan();
@@ -454,7 +486,7 @@ public class Main {
                     break;
                 case "2":
                     pilihanValid = true;
-                    kurir = "REGULEREXPRESS";
+                    kurir = "EXPRESS";
                     break;
                 case "3":
                     pilihanValid = true;
@@ -658,14 +690,39 @@ public class Main {
 
     public static void printRiwayat(Riwayat r){
         String tambahan = "";
+        Double ongkir = 0.0;
+        
+        if(r.namaKurir != null) {
+            Toko t = toko.get(r.produk.kodePenjual);
+            switch(r.namaKurir) {
+                case "REGULER":
+                    ongkir = t.ongkir[0];
+                    break;
+                case "EXPRESS":  // Changed from REGULEREXPRESS to EXPRESS
+                    ongkir = t.ongkir[1];
+                    break;
+                case "VIP":
+                    ongkir = t.ongkir[2];
+                    break;
+            }
+            tambahan += ", Kurir: " + r.namaKurir + 
+                       ", Ongkir: Rp" + ongkir;
+        }
+
         if(r instanceof RiwayatTagihan) {
             tambahan += ", Token: " + ((RiwayatTagihan) r).token;
         }
         if(r instanceof RiwayatMakanan) {
-            tambahan += ", Estimasi Kedatangan: " + ((RiwayatMakanan) r).estimasiKedatangan + ", Nama Kurir: " + ((RiwayatMakanan) r).namaKurir;
+            RiwayatMakanan rm = (RiwayatMakanan) r;
+            tambahan += ", Estimasi Kedatangan: " + rm.estimasiKedatangan;
         } 
-        System.out.println("Produk: " + r.produk.nama + ", Jumlah: " + r.jumlah + ", Total: " + r.produk.harga * r.jumlah +", Tanggal: " + r.tanggal
-                + ", Status: " + r.status + tambahan);
+
+        System.out.println("Produk: " + r.produk.nama + 
+                          ", Jumlah: " + r.jumlah + 
+                          ", Harga: Rp" + r.produk.harga * r.jumlah +
+                          (ongkir > 0 ? ", Total + Ongkir: Rp" + (r.produk.harga * r.jumlah + ongkir) : "") +
+                          ", Tanggal: " + r.tanggal +
+                          ", Status: " + r.status + tambahan);
     }
 
     public static void tampilkanRiwayat() {
