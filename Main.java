@@ -121,7 +121,7 @@ public class Main {
                     System.out.println("Top Up ShopeePay Berhasil");
                     break;
                 case "7":
-                    tampilkanPayLater();
+                    bayarPayLater();
                     break;
                 case "8":
                     System.out.println("Keluar dari program. Terima kasih!");
@@ -504,6 +504,9 @@ public class Main {
         System.out.println("Jumlah Topup: ");
         loginUser.saldo += input.nextDouble();
         input.nextLine();
+        System.out.println("Topup berhasil! Saldo sekarang: Rp" + loginUser.saldo);
+        System.out.print("\n---Tekan enter untuk lanjut---");
+        input.nextLine();
     }
 
     public static void newPinjam(){
@@ -552,6 +555,45 @@ public class Main {
                 nominal = 0.0;
             }
         }
+    }
+
+    public static void bayarPayLater(){
+        PayLater pl = paylater.get(loginUser.username);
+        if (pl == null || pl.tagihan.isEmpty()) {
+            System.out.println("Tidak ada tagihan PayLater.");
+            return;
+        }
+
+        tampilkanPayLater();
+        System.out.print("Mau Bayar PayLater? (y/n): ");
+        String pilihan = input.nextLine();
+        if (pilihan.equalsIgnoreCase("y")) {
+            System.out.println("Masukkan jumlah yang ingin dibayar: ");
+            Double totalBayar = input.nextDouble();
+            input.nextLine(); // Consume newline
+            if(totalBayar > loginUser.saldo) {
+                System.out.println("Saldo tidak cukup.");
+                return;
+            } else {
+                loginUser.saldo -= totalBayar;
+                for (int i = 0; i < pl.tagihan.size(); i++) {
+                    Double tagihanpl = pl.tagihan.get(i);
+                    if (totalBayar >= tagihanpl) {
+                        totalBayar -= tagihanpl;
+                        pl.tagihan.set(i, 0.0); // Settle the bill
+                    } else {
+                        pl.tagihan.set(i, tagihanpl - totalBayar); // Partial payment
+                        break;
+                    }
+                }
+                System.out.println("Pembayaran PayLater berhasil! Saldo tersisa: " + loginUser.saldo);
+                System.out.println("Tagihan PayLater saat ini:");
+                tampilkanPayLater();
+            }
+        } else {
+            System.out.println("Pembayaran PayLater dibatalkan.");
+        }
+
     }
 
     public static Boolean pilihBayar(Double totalBayar){
